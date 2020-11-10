@@ -1,0 +1,9 @@
+body {
+  width: 1080px;
+  height: 1500px;
+}
+
+#imgVoteOne, #imgVoteTwo , #imgVoteThree{
+  width: 200px;
+  height: 200px;
+}
