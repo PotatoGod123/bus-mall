@@ -7,6 +7,9 @@ var sectionForVoteImg = document.getElementById('sectionImagesVote');
 var allPicture=[];
 var countScore = 0;
 var buttonTarget;
+var differentRandomNumbers =[];
+var allPictureNames= [];
+var allPictureVotes=[];
 
 //the main contructor for pictures
 var PictureMaster = function(name){
@@ -18,11 +21,15 @@ var PictureMaster = function(name){
   if(this.filepath.includes('.png')){
     this.filepath= `img/${name}`;
     this.title = 'sweep';
+    this.alt = 'sweep';
   }
   if(this.filepath.includes('.gif')){
     this.filepath=`img/${name}`;
     this.title = 'usb';
+    this.alt='usb';
   }
+
+  //pushes object instances into allPicture array
   allPicture.push(this);
 };
 
@@ -51,23 +58,41 @@ new PictureMaster('usb.gif');
 function randomNumberFromIndexLength(){
   return Math.floor(Math.random() * allPicture.length);
 }
+
+//essentially this will get 3 number first and put them infrot of the differentRanDOmNumber array
+//whenever its call, so when the user click a picture, this is function is inside the render so
+// it will run when that happens cause the render is being called in the event trigger, which
+// will keep on putting more numbers at the front but checking that the number are not the same before
+// hand so you will never repeat number in the whole length of the array while the max lengeth of the array being 8
+//cause the last part of the function will remove the 9th number allowing to appear again in the array
+//so if you kept increasing the number in the last while you would run out of images to show cause no
+// number would fit
+function noMatchingRandomNumbers() {
+  
+  for(var i=0;i<3;i++){
+    var randomNums = randomNumberFromIndexLength();
+
+    //make sure number is unique
+    while(differentRandomNumbers.includes(randomNums)){
+      randomNums = randomNumberFromIndexLength();
+    }
+
+    // put it at the beginning of the array
+    differentRandomNumbers.unshift(randomNums);
+    //this make array only 6 long by removing the last number
+    while(differentRandomNumbers.length>8){
+      differentRandomNumbers.pop();
+    }
+  }
+}
+
 //this will render the picture while making sure they are never displayed twice in the same render
 //all while adding a 1 to the views when they do appear
 function render(){
-  var firstRandomNumber = randomNumberFromIndexLength();
-  var secondRandomNumber = randomNumberFromIndexLength();
-  var thirdRandomNumber = randomNumberFromIndexLength();
-
-  while(firstRandomNumber===secondRandomNumber){
-    secondRandomNumber = randomNumberFromIndexLength();
-  }
-  while(secondRandomNumber===thirdRandomNumber){
-    thirdRandomNumber = randomNumberFromIndexLength();
-  }
-
-  while(thirdRandomNumber===firstRandomNumber||thirdRandomNumber===firstRandomNumber){
-    thirdRandomNumber = randomNumberFromIndexLength();
-  }
+  noMatchingRandomNumbers();
+  var firstRandomNumber = differentRandomNumbers[0];
+  var secondRandomNumber = differentRandomNumbers[1];
+  var thirdRandomNumber = differentRandomNumbers[2];
 
   firstImgElement.src = allPicture[firstRandomNumber].filepath;
   firstImgElement.title = allPicture[firstRandomNumber].title;
@@ -85,16 +110,17 @@ function render(){
   allPicture[thirdRandomNumber].views++;
 }
 
+
 //this will add the event listener that will listen to the section of the img and listen for a listen
 sectionForVoteImg.addEventListener('click',votingImg);
 //this is the function running in the listener above, whic will look for the value of title and match
 // it to the tittle in all the intance inside the array and then once matched at a 1 vote value
 function votingImg(e){
-  var targetName = e.target.title;
+  var targetTitle = e.target.title;
 
   // console.log(targetName);
   for(var i=0;i<allPicture.length;i++){
-    if(targetName===allPicture[i].title){
+    if(targetTitle===allPicture[i].title){
       allPicture[i].votes++;
       countScore++;
       render();
@@ -103,10 +129,10 @@ function votingImg(e){
   //once the user has clicked 25 times, it's set to 24 since loading the page is the first try
   //this will remove the event so no more clicking on images, make a button appear and add an event listener to it
   //button has special name,type,and id with it's listener running fuction below
-  if(countScore===24){
+  if(countScore===25){
     sectionForVoteImg.removeEventListener('click',votingImg);
     var buttonFormation = document.createElement('button');
-    buttonFormation.textContent = 'View Results';
+    buttonFormation.textContent = 'View Chart Results!';
     buttonFormation.name = 'click';
     buttonFormation.type = 'click';
     buttonFormation.id ='buttonList';
@@ -116,6 +142,10 @@ function votingImg(e){
   }
 
 }
+
+
+
+
 //this function runs inside the eventListener for the button made after voting, when user clicks on
 // the button that appears it fire this and display append a ul with a bunch of li and show a concatenation
 // of strings and the views and votes for each instance, then remove its own listner so click on it will not 
@@ -124,6 +154,8 @@ function resultRender(e){
   e.preventDefault();
 
   if(e.target){
+    getTitleNames();
+    //this will write list
     var ulElement = document.createElement('ul');
     sectionForVoteImg.appendChild(ulElement);
     ulElement.id = 'ulList';
@@ -133,11 +165,47 @@ function resultRender(e){
       liElement.textContent = `${allPicture[i].title} had ${allPicture[i].votes} votes, and was seen ${allPicture[i].views} times.`;
       ulListParent.appendChild(liElement);
     }
+    //this will write the chart using chart.js
+    var ctx = document.getElementById('myChart');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: allPictureNames,// name of all pictures
+        datasets: [{
+          label: '# of Votes Per Picture',
+          data: allPictureVotes,// number of votes
+          backgroundColor: 'black',
+          borderColor: 'red',
+          borderWidth: 1,
+          hoverBackgroundColor: 'white',
+          hoverBorderColor: 'black',
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+    });
     buttonTarget =document.getElementById('buttonList');
     buttonTarget.removeEventListener('click',resultRender);
+  }
+}
+//this is a helper function that will grab all the name's and put them into an array
+function getTitleNames(){
+  for(var i=0;i<allPicture.length;i++){
+    allPictureNames.push(allPicture[i].title);
+    allPictureVotes.push(allPicture[i].votes);
   }
 }
 
 //calling functions
 
 render();
+
+
+

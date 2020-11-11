@@ -1,9 +1,70 @@
 body {
-  width: 1080px;
-  height: 1500px;
+  width: 1920px;
+  height: 1080px;
 }
 
 #imgVoteOne, #imgVoteTwo , #imgVoteThree{
   width: 200px;
   height: 200px;
+}
+
+#myChart{
+  max-width: 600px;
+  max-height: 600px;
+  margin-left: 824px;
+}
+
+#ulList{
+  list-style: inside;
+  float: left;
+  border: solid 2px red;
+  width: 299px;
+  height: 642px;
+  text-transform: capitalize;
+}
+#ulList::first-letter{
+  text-transform: capitalize;
+}
+
+header{
+  padding: 33px;
+  border: 1px lightblue solid;
+  height: 50px;
+}
+
+#imgVoteOne{
+  margin-left: 558px;
+}
+
+#sectionLogoPicture{
+  float: left;
+  
+}
+#sectionLogoText{
+  width: 310px;
+  margin-top: 7px;
+  font-weight: bold;
+  font-size: 40px;
+}
+
+body header section nav ul li{
+  border: 2px solid black;
+  display: -webkit-inline-box;
+  display: -moz-inline-box;
+  display: -ms-inline-flexbox;
+  font-size: 30px;
+  max-width: max-content;
+  padding: 12px 22px;
+  margin-right: -6px;
+  border-radius: 11px 11px 0px 0px;
+}
+body header section nav ul{
+
+}
+#sectionNav{
+  margin-left: 1291px;
+}
+body header section nav{
+  margin-left: 0px;
+  margin-top: -59px;
 }
