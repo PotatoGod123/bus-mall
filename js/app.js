@@ -10,23 +10,22 @@ var buttonTarget;
 var differentRandomNumbers =[];
 var allPictureNames= [];
 var allPictureVotes=[];
+var allPictureViewd=[];
 
 //the main contructor for pictures
-var PictureMaster = function(name){
+var PictureMaster = function(name,votes=0,views=0){
   this.filepath = `img/${name}.jpg`;
   this.title = this.alt = name;
-  this.votes = 0;
-  this.views = 0;
+  this.votes = votes;
+  this.views = views;
   //this will take any object instance that has the .png or .gif in their name and rewrite the filepath property
   if(this.filepath.includes('.png')){
     this.filepath= `img/${name}`;
     this.title = 'sweep';
-    this.alt = 'sweep';
   }
   if(this.filepath.includes('.gif')){
     this.filepath=`img/${name}`;
     this.title = 'usb';
-    this.alt='usb';
   }
 
   //pushes object instances into allPicture array
@@ -68,7 +67,6 @@ function randomNumberFromIndexLength(){
 //so if you kept increasing the number in the last while you would run out of images to show cause no
 // number would fit
 function noMatchingRandomNumbers() {
-  
   for(var i=0;i<3;i++){
     var randomNums = randomNumberFromIndexLength();
 
@@ -123,6 +121,7 @@ function votingImg(e){
     if(targetTitle===allPicture[i].title){
       allPicture[i].votes++;
       countScore++;
+      callTHisTOresetandInsertCurrentAllPictureData();
       render();
     }
   }
@@ -130,6 +129,7 @@ function votingImg(e){
   //this will remove the event so no more clicking on images, make a button appear and add an event listener to it
   //button has special name,type,and id with it's listener running fuction below
   if(countScore===25){
+    turnIntoJSONString();
     sectionForVoteImg.removeEventListener('click',votingImg);
     var buttonFormation = document.createElement('button');
     buttonFormation.textContent = 'View Chart Results!';
@@ -143,9 +143,29 @@ function votingImg(e){
 
 }
 
-
-
-
+//this will function will turn all the object in allpictures and make into the string!!!the setter
+function turnIntoJSONString(){
+  var stringPictureData = JSON.stringify(allPicture);
+  localStorage.setItem('allPicture', stringPictureData);
+}
+//now this one will get the string out and set it to back to an object and run the function underneath sending the newly made
+// object back into it which wtill make the allPicture array become the previous value and then clear the localStorage
+// so if they complete the selection it will startover again keep track !!!!the getter and converter
+function turnIntoJavaScriptAndMakeANewAllPicture(){
+  var getStringPictureData = localStorage.getItem('allPicture');
+  var parsedAllPicture = JSON.parse(getStringPictureData);
+  makeTheNewAllPicture(parsedAllPicture);
+  localStorage.clear('allPicture');
+}
+//this will be run in the function above while grabiing the parsed data, but it will reset the allPicture array while grabing the string version 
+//from the local storage from above to generate an all new object instance array inside the allPicture! so if set up properly, it will keep all
+// necessary values from past user instance on machine
+function makeTheNewAllPicture(banana){
+  allPicture=[];
+  for(var i=0;i<banana.length;i++){
+    new PictureMaster(banana[i].alt,banana[i].votes,banana[i].views);
+  }
+}
 //this function runs inside the eventListener for the button made after voting, when user clicks on
 // the button that appears it fire this and display append a ul with a bunch of li and show a concatenation
 // of strings and the views and votes for each instance, then remove its own listner so click on it will not 
@@ -179,6 +199,15 @@ function resultRender(e){
           borderWidth: 1,
           hoverBackgroundColor: 'white',
           hoverBorderColor: 'black',
+        },
+        {
+          label:'# of Views for Each Picture',
+          data:allPictureViewd,
+          backgroundColor: 'blue',
+          borderColor:'green',
+          borderWidth:.5,
+          hoverBackgroundColor:'white',
+          hoverBorderColor:'black',
         }]
       },
       options: {
@@ -191,6 +220,7 @@ function resultRender(e){
         }
       }
     });
+    //these two lines will remove the listener from the button after making the list and chart so it can't be click on and keep adding more
     buttonTarget =document.getElementById('buttonList');
     buttonTarget.removeEventListener('click',resultRender);
   }
@@ -200,12 +230,29 @@ function getTitleNames(){
   for(var i=0;i<allPicture.length;i++){
     allPictureNames.push(allPicture[i].title);
     allPictureVotes.push(allPicture[i].votes);
+    allPictureViewd.push(allPicture[i].views);
   }
 }
 
 //calling functions
-
+callThisToCheckLocalStorageAn();
 render();
+callTHisTOresetandInsertCurrentAllPictureData();
 
+//just some extra last min functions, this one is used to update the localStorage with current session data whenever called
+function callTHisTOresetandInsertCurrentAllPictureData(){
+  localStorage.clear('allPicture');
+  turnIntoJSONString();
+}
+//this function is called at the end after the page loads to check if the localStorage is empty, if it is then everything goes on normal
+// but if it's not empty it will run the function which will update the current session with previous data of other sessions
+function callThisToCheckLocalStorageAn(){
+  if(localStorage.length===0){
+    console.log('yes localstorage be empty nothing happens');
+  } else{
+    console.log('it do not be empty brotha this will update the allPicture keepign track of previouew stuff etc');
+    turnIntoJavaScriptAndMakeANewAllPicture();
+  }
+}
 
 
