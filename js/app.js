@@ -121,7 +121,7 @@ function votingImg(e){
     if(targetTitle===allPicture[i].title){
       allPicture[i].votes++;
       countScore++;
-      callTHisTOresetandInsertCurrentAllPictureData();
+      callThisTOresetandInsertCurrentAllPictureData();
       render();
     }
   }
@@ -187,6 +187,7 @@ function resultRender(e){
     }
     //this will write the chart using chart.js
     var ctx = document.getElementById('myChart');
+    // eslint-disable-next-line no-undef
     new Chart(ctx, {
       type: 'bar',
       data: {
@@ -202,7 +203,7 @@ function resultRender(e){
         },
         {
           label:'# of Views for Each Picture',
-          data:allPictureViewd,
+          data:allPictureViewd,//number of views 
           backgroundColor: 'blue',
           borderColor:'green',
           borderWidth:.5,
@@ -233,14 +234,8 @@ function getTitleNames(){
     allPictureViewd.push(allPicture[i].views);
   }
 }
-
-//calling functions
-callThisToCheckLocalStorageAn();
-render();
-callTHisTOresetandInsertCurrentAllPictureData();
-
-//just some extra last min functions, this one is used to update the localStorage with current session data whenever called
-function callTHisTOresetandInsertCurrentAllPictureData(){
+//just some extra last min functions, this one will reset and update the localStorage with current session data whenever called w
+function callThisTOresetandInsertCurrentAllPictureData(){
   localStorage.clear('allPicture');
   turnIntoJSONString();
 }
@@ -254,5 +249,11 @@ function callThisToCheckLocalStorageAn(){
     turnIntoJavaScriptAndMakeANewAllPicture();
   }
 }
+
+//calling functions
+callThisToCheckLocalStorageAn();
+render();
+callThisTOresetandInsertCurrentAllPictureData();
+
 
 
