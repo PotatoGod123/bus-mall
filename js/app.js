@@ -242,7 +242,7 @@ function callThisTOresetandInsertCurrentAllPictureData(){
 //this function is called at the end after the page loads to check if the localStorage is empty, if it is then everything goes on normal
 // but if it's not empty it will run the function which will update the current session with previous data of other sessions
 function callThisToCheckLocalStorageAn(){
-  if(localStorage.length===0){
+  if(localStorage.getItem('allPicture') === null){
     console.log('yes localstorage be empty nothing happens');
   } else{
     console.log('it do not be empty brotha this will update the allPicture keepign track of previouew stuff etc');
