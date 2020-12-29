@@ -68,3 +68,8 @@ body header section nav{
   margin-left: 0px;
   margin-top: -59px;
 }
+
+#busslogo{
+  max-width: 400px;
+  max-height: 80px;
+}
